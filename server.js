@@ -27,7 +27,6 @@ function startUp() {
         "Add Employees",
         "Add Departments",
         "Add Roles",
-        "Update Employee Role",
         "exit",
       ]
     })
@@ -51,9 +50,6 @@ function startUp() {
         case "Add Roles":
           addRole();
           break;
-        case "Update Employee Roles":
-          updateEmpRole();
-          break;
         case "exit":
           connection.end();
           break;
@@ -63,7 +59,7 @@ function startUp() {
 
 function empAllSearch() {
   connection.query(
-    "SELECT employees_id, employees.first_name, employees.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employees.role_id = role.role_id LEFT JOIN department on role.department_id = department.department_id LEFT JOIN employee manager on manager.manager_id = employees.manager_id;",
+        "SELECT  employees.id, employees.first_name, employees.last_name, roles.title, departments.dep_name AS departments, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.department_id LEFT JOIN employees manager on manager.manager_id = employees.manager_id;",
     function(err, res) {
       if (err) throw err;
       console.table(res);
@@ -73,7 +69,7 @@ function empAllSearch() {
 };
 
 function deptSearch() {
-  connection.query("SELECT * from department", function(err, res) {
+  connection.query("SELECT * from departments", function(err, res) {
     if (err) throw err;
     console.table(res);
     startUp();
@@ -81,15 +77,15 @@ function deptSearch() {
 };
 
 function roleSearch() {
-  connection.query("SELECT * from role", function(err, res) {
+  connection.query("SELECT * from roles", function(err, res) {
     if (err) throw err;
     console.table(res);
     startUp();
   });
 };
 
-function updateEmpManager (empID, roleID){
-connection.query("UPDATE employees SET role_id = ? WHERE employees_id = ?", [roleID, empID])
+function updateEmpManager (roleID, empID){
+connection.query("UPDATE employees SET role_id = ? WHERE employees.id = ?", [roleID, empID])
 };
 
 function addEmp() {
@@ -138,13 +134,13 @@ function addDept() {
     .prompt({
       type: "input",
       message: "What would you like to name the new department?",
-      name: "department"
+      name: "departments"
     })
     .then(function(answer) {
-        console.log(answer.department);
-      connection.query("INSERT INTO department SET ?",
+        console.log(answer.departments);
+      connection.query("INSERT INTO departments SET ?",
         {
-          name: answer.department,
+          dep_name: answer.departments,
         },
         function(err, res) {
           if (err) throw err;
@@ -166,14 +162,14 @@ function addRole() {
       name: "id"
     },
     {
-      type: "list",
+      type: "input",
       message: "What is the salary for this role?",
       name: "salary"
     }
   ];
   inquirer.prompt(questions).then(function(answer) {
     connection.query(
-      "INSERT INTO role SET ?",
+      "INSERT INTO roles SET ?",
       {
         title: answer.title,
         department_id: answer.id,
@@ -185,19 +181,4 @@ function addRole() {
       }
     );
   });
-};
-function updateEmpRole() {
-  var employees = empAllSearch();
-  var empChoices = employees.map(index => {
-    id: id;
-  })
-  inquirer.prompt({
-   type: "list",
-   name: "role id",
-  message: " WHich role would you like to assign the employee?",
-  choices: empChoices
-
-  })
-  connection.query("UPDATE employees SET role_id = ? WHERE employees_id = ?", [roleID, empID])
-
 };

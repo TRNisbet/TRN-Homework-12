@@ -5,14 +5,15 @@ USE employees;
 CREATE TABLE departments (
 	id INTEGER AUTO_INCREMENT, 
 	dep_name VARCHAR(30) NOT NULL UNIQUE,
+    department_id INTEGER,
 	PRIMARY KEY(id)
 );
 
-INSERT INTO departments (dep_name) VALUES 
-    ("Sales"),
-    ("Technology"),
-    ("Ops"),
-    ("HR")
+INSERT INTO departments (dep_name, department_id) VALUES 
+    ("Sales", 1),
+    ("Technology", 2),
+    ("Ops", 3),
+    ("HR", 4)
 ;
 
 CREATE TABLE roles (
